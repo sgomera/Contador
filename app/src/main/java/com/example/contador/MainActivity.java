@@ -1,6 +1,8 @@
 package com.example.contador;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -33,14 +35,15 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
+//---------------------------PERSISTENCE WITH BUNDLES------------------------------------
+//----------------------doesn't manteins data when app is closed.------------------------
     //mètode que s'activa sol quan es surt de l'activitat. Guarda a un bundle anomenat "estado"
     //el parell de valors key= cuenta i value = contador. I després el guarda en l'activitat
     //pare, per això posa super.
-    public void onSaveInstanceState(Bundle estado) {
+   /* public void onSaveInstanceState(Bundle estado) {
         estado.putInt("cuenta",contador);
         super.onSaveInstanceState(estado);
-    }
+    }*/
 
 
     // mètode que recupera el valor del bundle estado que estava guardat en el pare (super),
@@ -48,12 +51,44 @@ public class MainActivity extends AppCompatActivity {
     // que té per key "cuenta" i després el posa a la vista textResultat.
     // després de sobreescriure aquests dos mètodes, quan canviem l'orientació del dispositiu,
     // ja no es perd la informació del contador.
-    public void onRestoreInstanceState(Bundle estado){
+    /*public void onRestoreInstanceState(Bundle estado){
         super.onRestoreInstanceState(estado);
         contador = estado.getInt("cuenta");
         textResultat.setText("" + contador);
+    }*/
+
+
+//-------------------------PERSISTENCE WITH SHAREDPREFERENCES-----------------------------
+//-----------stores the data in sharedpreferences.xml (even when app i restarted)---------
+    public void onPause() {
+        super.onPause();
+
+        //recupera el sharedPreferences que ja té per defecte tota app Android, i el guarda a datos:
+        SharedPreferences datos = PreferenceManager.getDefaultSharedPreferences(this);
+
+        //fer editable l'objecte tipus SharedPreferences del sistema:
+        //el mètode edit de SharedPreferences, retorna un objecte SharedPreferences.editor:
+        SharedPreferences.Editor miEditor = datos.edit();
+
+        //establir la informació a emmagatzemar:
+        miEditor.putInt("cuenta", contador);
+
+        //transferir la informació a l'objecte SharedPreferences.
+        miEditor.apply();
+
     }
 
+
+    public void onResume() {
+        super.onResume();
+        //recuperar la informació que hi ha emmagatzemada en el SharedPreferences
+            //accedir al SharedPreferences per defecte:
+        SharedPreferences datos = PreferenceManager.getDefaultSharedPreferences(this);
+
+        contador = datos.getInt("cuenta",0);
+        textResultat.setText("" + contador);
+
+    }
 
 
     public void incrementaContador(View view) {
