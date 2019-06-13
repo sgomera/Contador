@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
         //inicialització de variables quan es crea l'activitat principal
         textResultat = (TextView) findViewById(R.id.contadorPolsacions);
         contador = 0;
+        textResultat.setText("" + contador);
 
         //s'ha de posar a l'escolta la vista corresponent, que seria n_resultado:
         EventoTeclado teclado = new EventoTeclado();
@@ -31,6 +32,29 @@ public class MainActivity extends AppCompatActivity {
         nReseteo.setOnEditorActionListener(teclado);
 
     }
+
+
+    //mètode que s'activa sol quan es surt de l'activitat. Guarda a un bundle anomenat "estado"
+    //el parell de valors key= cuenta i value = contador. I després el guarda en l'activitat
+    //pare, per això posa super.
+    public void onSaveInstanceState(Bundle estado) {
+        estado.putInt("cuenta",contador);
+        super.onSaveInstanceState(estado);
+    }
+
+
+    // mètode que recupera el valor del bundle estado que estava guardat en el pare (super),
+    // quan es reïnicia una activitat. Guarda a la variable contador, el valor del bundle estado
+    // que té per key "cuenta" i després el posa a la vista textResultat.
+    // després de sobreescriure aquests dos mètodes, quan canviem l'orientació del dispositiu,
+    // ja no es perd la informació del contador.
+    public void onRestoreInstanceState(Bundle estado){
+        super.onRestoreInstanceState(estado);
+        contador = estado.getInt("cuenta");
+        textResultat.setText("" + contador);
+    }
+
+
 
     public void incrementaContador(View view) {
         contador++;
